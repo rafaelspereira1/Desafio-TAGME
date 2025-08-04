@@ -1,0 +1,25 @@
+<div class="login-bg">
+  <div class="login-container mat-app-background">
+    <mat-card>
+      <mat-card-title>Enviar Imagem</mat-card-title>
+      <input type="file" (change)="onFileChange($event)" accept="image/*" />
+      <div *ngIf="imageChangedEvent">
+        <image-cropper
+          [imageChangedEvent]="imageChangedEvent"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="1 / 1"
+          format="png"
+          (imageCropped)="onImageCropped($event)"
+        ></image-cropper>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="uploadImage()"
+        [disabled]="!croppedImage"
+      >
+        Enviar
+      </button>
+    </mat-card>
+  </div>
+</div>

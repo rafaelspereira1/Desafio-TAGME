@@ -1,0 +1,76 @@
+<div class="login-bg">
+  <div class="login-container mat-app-background">
+    <mat-card>
+      <mat-card-title>Minhas Imagens</mat-card-title>
+      <div
+        style="
+          margin-bottom: 1rem;
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        "
+      >
+        <mat-form-field appearance="fill">
+          <mat-label>Filtrar por título</mat-label>
+          <input matInput [(ngModel)]="filterTitle" placeholder="Título" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Ordenar por</mat-label>
+          <mat-select [(ngModel)]="orderBy">
+            <mat-option value="title">Título</mat-option>
+            <mat-option value="createdAt">Data</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Ordem</mat-label>
+          <mat-select [(ngModel)]="order">
+            <mat-option value="asc">Ascendente</mat-option>
+            <mat-option value="desc">Descendente</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <table mat-table [dataSource]="images" matSort>
+        <ng-container matColumnDef="preview">
+          <th mat-header-cell *matHeaderCellDef>Preview</th>
+          <td mat-cell *matCellDef="let image">
+            <img
+              [src]="image.url"
+              alt="preview"
+              style="height: 60px; border-radius: 8px"
+            />
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Título</th>
+          <td mat-cell *matCellDef="let image">{{ image.title }}</td>
+        </ng-container>
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Data</th>
+          <td mat-cell *matCellDef="let image">
+            {{ image.createdAt | date : "short" }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let image">
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteImage(image.id)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <mat-paginator
+        [length]="total"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+      ></mat-paginator>
+    </mat-card>
+  </div>
+</div>

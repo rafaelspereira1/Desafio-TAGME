@@ -25,7 +25,6 @@ export class ImageService {
     }
     let buffer = file.buffer;
     if (createDto.square) {
-      // Crop/resize to square (1:1) using sharp
       const metadata = await sharp(buffer).metadata();
       const size = Math.min(metadata.width ?? 512, metadata.height ?? 512);
       buffer = await sharp(buffer)

@@ -131,7 +131,6 @@ describe('ImageService', () => {
   });
 
   it('should crop/resize image to square if square is true', async () => {
-    // Create a rectangular PNG buffer using sharp
     const rectBuffer: Buffer = await sharp({
       create: {
         width: 400,
@@ -145,7 +144,6 @@ describe('ImageService', () => {
     const dto: CreateImageDto = { title: 'Square', square: true };
     const file = mockFile(rectBuffer);
     const image = await service.create(dto, file, userId);
-    // Check that the resulting buffer is square
     const metadata: sharp.Metadata = await sharp(image.data).metadata();
     expect(metadata.width).toBe(metadata.height);
   });

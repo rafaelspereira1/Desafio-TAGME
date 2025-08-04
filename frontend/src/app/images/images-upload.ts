@@ -52,7 +52,6 @@ export class ImagesUploadComponent {
   }
 
   onImageCropped(event: ImageCroppedEvent): void {
-    // Try different properties that might contain the base64 data
     this.croppedImage = event.base64 || event.objectUrl || null;
     console.log('Image cropped:', {
       event: event,
@@ -101,7 +100,6 @@ export class ImagesUploadComponent {
           });
           this.resetForm();
           this.loading = false;
-          // Navigate back to list after successful upload
           this.router.navigate(['/']);
         },
         error: (error) => {

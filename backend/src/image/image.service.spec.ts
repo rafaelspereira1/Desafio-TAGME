@@ -50,7 +50,6 @@ interface IImageModel {
   findByIdAndUpdate: jest.Mock;
   findByIdAndDelete: jest.Mock;
   countDocuments: jest.Mock;
-  // The constructor signature for new documents
   (data: any): MockImage;
 }
 

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ImageService {
-  private readonly baseUrl = 'http://localhost:3000'; // Adjust this to your backend URL
+  private readonly baseUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {}
 
@@ -23,7 +23,6 @@ export class ImageService {
         hasComma: imageData.includes(','),
       });
 
-      // If it's a blob URL, we need to fetch it first
       if (imageData.startsWith('blob:')) {
         console.log('Detected blob URL, fetching blob data...');
         return new Observable((observer) => {
@@ -54,10 +53,8 @@ export class ImageService {
         });
       }
 
-      // Handle base64 data URLs
       let base64Data = imageData;
 
-      // If it's a data URL, extract just the base64 part
       if (base64Data.startsWith('data:')) {
         const base64Parts = base64Data.split(',');
         if (base64Parts.length > 1) {
@@ -71,15 +68,12 @@ export class ImageService {
         isValidBase64Chars: /^[A-Za-z0-9+/]*={0,2}$/.test(base64Data),
       });
 
-      // Validate base64 format
       if (!base64Data || base64Data.length === 0) {
         throw new Error('Empty base64 data');
       }
 
-      // Clean the base64 string (remove any whitespace or invalid characters)
       base64Data = base64Data.replace(/\s/g, '');
 
-      // Convert base64 to blob
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {

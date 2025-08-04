@@ -9,6 +9,7 @@ import { Image } from './schemas/image.schema';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { QueryImageDto } from './dto/query-image.dto';
+import sharp from 'sharp';
 
 @Injectable()
 export class ImageService {
@@ -22,9 +23,18 @@ export class ImageService {
     if (!file || !file.buffer) {
       throw new Error('Image file buffer is required');
     }
+    let buffer = file.buffer;
+    if (createDto.square) {
+      // Crop/resize to square (1:1) using sharp
+      const metadata = await sharp(buffer).metadata();
+      const size = Math.min(metadata.width ?? 512, metadata.height ?? 512);
+      buffer = await sharp(buffer)
+        .resize({ width: size, height: size, fit: 'cover', position: 'center' })
+        .toBuffer();
+    }
     const image = new this.imageModel({
       ...createDto,
-      data: file.buffer,
+      data: buffer,
       user: new Types.ObjectId(userId),
     });
     return image.save();

@@ -7,6 +7,7 @@ import { ImageService } from './image.service';
 import { Image, ImageSchema } from './schemas/image.schema';
 import { CreateImageDto } from './dto/create-image.dto';
 import { QueryImageDto } from './dto/query-image.dto';
+import sharp from 'sharp';
 
 const mockFile = (
   buffer: Buffer = Buffer.from('test'),
@@ -65,7 +66,11 @@ describe('ImageService', () => {
 
   it('should paginate, filter, and order images', async () => {
     for (let i = 1; i <= 15; i++) {
-      await service.create({ title: `img${i}` }, mockFile(), userId);
+      await service.create(
+        { title: `img${String(i).padStart(2, '0')}` },
+        mockFile(),
+        userId,
+      );
     }
     const query: QueryImageDto = {
       page: 2,
@@ -77,7 +82,7 @@ describe('ImageService', () => {
     const { data, total } = await service.findAll(query, userId);
     expect(total).toBe(15);
     expect(data.length).toBe(5);
-    expect(data[0].title).toBe('img6');
+    expect(data[0].title).toBe('img06');
   });
 
   it('should find one image by id and user', async () => {
@@ -123,5 +128,25 @@ describe('ImageService', () => {
     await expect(
       service.delete(String(image._id), otherUserId),
     ).rejects.toThrow();
+  });
+
+  it('should crop/resize image to square if square is true', async () => {
+    // Create a rectangular PNG buffer using sharp
+    const rectBuffer: Buffer = await sharp({
+      create: {
+        width: 400,
+        height: 200,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+    const dto: CreateImageDto = { title: 'Square', square: true };
+    const file = mockFile(rectBuffer);
+    const image = await service.create(dto, file, userId);
+    // Check that the resulting buffer is square
+    const metadata: sharp.Metadata = await sharp(image.data).metadata();
+    expect(metadata.width).toBe(metadata.height);
   });
 });

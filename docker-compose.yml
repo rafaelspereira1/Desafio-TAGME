@@ -10,16 +10,16 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  backend:
-    build: ./backend/tagme-backend
-    container_name: tagme-backend
-    restart: always
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mongodb
-    environment:
-      MONGODB_URI: mongodb://mongodb:27017/tagme
+  # backend:
+  #   build: ./backend/tagme-backend
+  #   container_name: tagme-backend
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mongodb
+  #   environment:
+  #     MONGODB_URI: mongodb://mongodb:27017/tagme
 
 volumes:
   mongo_data:

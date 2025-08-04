@@ -72,8 +72,9 @@ describe('ImagesListComponent', () => {
         MatSelectModule,
         MatCardModule,
         FormsModule,
+        ImagesListComponent,
       ],
-      declarations: [ImagesListComponent],
+      declarations: [],
       providers: [
         { provide: ImageService, useClass: MockImageService },
         { provide: Router, useClass: MockRouter },

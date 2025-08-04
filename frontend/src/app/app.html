@@ -1,0 +1,20 @@
+<button
+  *ngIf="isAuthenticated()"
+  (click)="logout()"
+  style="
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    background: #232526;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+  "
+>
+  Sair
+</button>
+<router-outlet />

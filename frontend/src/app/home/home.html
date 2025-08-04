@@ -1,0 +1,35 @@
+<div class="login-bg">
+  <div class="login-container mat-app-background">
+    <mat-card class="login-card" style="align-items: center">
+      <div class="login-header">
+        <mat-icon
+          class="login-logo"
+          fontIcon="account_circle"
+          color="primary"
+        ></mat-icon>
+        <mat-card-title>Bem-vindo!</mat-card-title>
+        <mat-card-subtitle>Escolha uma opção para continuar</mat-card-subtitle>
+      </div>
+      <div
+        style="display: flex; flex-direction: column; gap: 1.2rem; width: 100%"
+      >
+        <button
+          mat-raised-button
+          color="primary"
+          class="full-width login-btn"
+          (click)="goToLogin()"
+        >
+          Entrar
+        </button>
+        <button
+          mat-raised-button
+          color="accent"
+          class="full-width login-btn"
+          (click)="goToRegister()"
+        >
+          Criar Conta
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div>

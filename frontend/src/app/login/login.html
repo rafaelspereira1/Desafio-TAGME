@@ -1,0 +1,62 @@
+<div class="login-bg">
+  <div class="login-container mat-app-background">
+    <mat-card class="login-card">
+      <div class="login-header">
+        <mat-icon class="login-logo" fontIcon="lock" color="primary"></mat-icon>
+        <mat-card-title>Entrar</mat-card-title>
+        <mat-card-subtitle>Acesse sua conta</mat-card-subtitle>
+      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            required
+            autocomplete="email"
+          />
+          <mat-error
+            *ngIf="
+              loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+            "
+          >
+            Por favor, insira um email válido
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            type="password"
+            required
+            autocomplete="current-password"
+          />
+          <mat-error
+            *ngIf="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            "
+          >
+            A senha é obrigatória
+          </mat-error>
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          class="full-width login-btn"
+          type="submit"
+          [disabled]="loginForm.invalid || loading"
+        >
+          Entrar
+        </button>
+        <mat-progress-bar
+          *ngIf="loading"
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <div *ngIf="error" class="error-message">{{ error }}</div>
+      </form>
+    </mat-card>
+  </div>
+</div>

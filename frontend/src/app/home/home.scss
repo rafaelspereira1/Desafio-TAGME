@@ -1,0 +1,6 @@
+@use "../login/login.scss" as *;
+
+.login-btn[color="accent"] {
+  background-color: #43a047 !important;
+  color: #fff !important;
+}

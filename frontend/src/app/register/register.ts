@@ -65,7 +65,7 @@ export class RegisterComponent {
         this.router.navigate(['/login']);
       },
       error: (err: any) => {
-        this.error = err.error?.message || 'Falha ao criar conta';
+        this.error = 'Falha ao criar conta';
         this.loading = false;
       },
       complete: () => {

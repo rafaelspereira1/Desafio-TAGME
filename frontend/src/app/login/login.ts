@@ -58,7 +58,12 @@ export class LoginComponent {
         this.router.navigate(['/']);
       },
       error: (err: any) => {
-        this.error = err.error?.message || 'Login failed';
+        const msg = err.error?.message;
+        if (msg === 'Invalid credentials') {
+          this.error = 'Credenciais inválidas';
+        } else {
+          this.error = 'Falha ao entrar';
+        }
         this.loading = false;
       },
       complete: () => {

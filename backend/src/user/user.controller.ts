@@ -38,7 +38,7 @@ export class UserController {
     const payload = { sub: user._id, email: user.email };
     const access_token: string = jwt.sign(payload, JWT_SECRET, {
       expiresIn: '15m',
-    }) as string;
+    });
     return { access_token };
   }
 

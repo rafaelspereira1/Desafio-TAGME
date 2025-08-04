@@ -4,9 +4,12 @@ FROM node:22-bullseye
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
+RUN npm install -g @nestjs/cli
 
 COPY . .
+
+RUN nest build
 
 EXPOSE 3000
 

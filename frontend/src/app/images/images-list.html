@@ -23,20 +23,25 @@
           align-items: center;
         "
       >
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="fill" class="filter-title-field">
           <mat-label>Filtrar por título</mat-label>
-          <input matInput [(ngModel)]="filterTitle" placeholder="Título" />
+          <input
+            matInput
+            [(ngModel)]="filterTitle"
+            (ngModelChange)="onFilterChange()"
+            placeholder="Título"
+          />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Ordenar por</mat-label>
-          <mat-select [(ngModel)]="orderBy">
+          <mat-select [(ngModel)]="orderBy" (ngModelChange)="onFilterChange()">
             <mat-option value="title">Título</mat-option>
             <mat-option value="createdAt">Data</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Ordem</mat-label>
-          <mat-select [(ngModel)]="order">
+          <mat-select [(ngModel)]="order" (ngModelChange)="onFilterChange()">
             <mat-option value="asc">Ascendente</mat-option>
             <mat-option value="desc">Descendente</mat-option>
           </mat-select>

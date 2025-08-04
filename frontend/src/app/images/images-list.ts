@@ -41,6 +41,7 @@ export class ImagesListComponent implements OnInit {
   total = 0;
   pageSize = 10;
   pageIndex = 0;
+  debounceTimer: any = null;
 
   constructor(private imageService: ImageService, private router: Router) {}
 
@@ -64,7 +65,6 @@ export class ImagesListComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           console.log('Full images response:', res);
-          // Use 'data' property as per backend spec
           this.images = res.data || [];
           this.total = res.total || this.images.length;
           console.log('Images array:', this.images);
@@ -90,22 +90,15 @@ export class ImagesListComponent implements OnInit {
   }
 
   getImageUrl(image: any): string {
-    // Use the 'url' property and prepend base URL if needed
     const url = image.url;
     if (!url) {
       console.warn('No image URL found for image:', image);
       return '';
     }
-    // If already absolute, return as is
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    // If url starts with '/images/', use backend base URL
-    if (url.startsWith('/images/')) {
-      return `http://localhost:3000${url}`;
-    }
-    // Otherwise, fallback to base URL + '/' + url
-    return `http://localhost:3000/images/${image.id}/file`;
+    return url;
   }
 
   onImageError(event: any, image: any): void {
@@ -118,5 +111,15 @@ export class ImagesListComponent implements OnInit {
 
   onImageLoad(event: any, image: any): void {
     console.log('Image loaded successfully:', { image, src: event.target.src });
+  }
+
+  onFilterChange(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(() => {
+      this.pageIndex = 0; // Reset to first page on filter change
+      this.loadImages();
+    }, 2000);
   }
 }

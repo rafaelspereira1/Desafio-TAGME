@@ -4,21 +4,18 @@ import { LoginComponent } from './login/login';
 import { RegisterComponent } from './register/register';
 import { ImagesListComponent } from './images/images-list';
 import { ImagesUploadComponent } from './images/images-upload';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: ImagesListComponent,
-    canActivate: [
-      /* your auth guard */
-    ],
+    canActivate: [authGuard],
   },
   {
     path: 'upload',
     component: ImagesUploadComponent,
-    canActivate: [
-      /* your auth guard */
-    ],
+    canActivate: [authGuard],
   },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },

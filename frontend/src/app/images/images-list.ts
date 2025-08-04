@@ -53,14 +53,6 @@ export class ImagesListComponent implements OnInit {
   }
 
   loadImages(): void {
-    console.log('Loading images with params:', {
-      page: this.pageIndex + 1,
-      limit: this.pageSize,
-      filter: this.filterTitle,
-      orderBy: this.orderBy,
-      order: this.order,
-    });
-
     this.imageService
       .getImages({
         page: this.pageIndex + 1,
@@ -71,9 +63,10 @@ export class ImagesListComponent implements OnInit {
       })
       .subscribe({
         next: (res: any) => {
-          console.log('Images loaded:', res);
-          this.images = res.items || res.data || res || [];
-          this.total = res.total || res.count || 0;
+          console.log('Full images response:', res);
+          // Use 'data' property as per backend spec
+          this.images = res.data || [];
+          this.total = res.total || this.images.length;
           console.log('Images array:', this.images);
         },
         error: (error) => {
@@ -97,31 +90,22 @@ export class ImagesListComponent implements OnInit {
   }
 
   getImageUrl(image: any): string {
-    // Try different possible URL properties and construct full URL if needed
-    const url = image.url || image.imageUrl || image.src || image.path;
-
+    // Use the 'url' property and prepend base URL if needed
+    const url = image.url;
     if (!url) {
       console.warn('No image URL found for image:', image);
       return '';
     }
-
-    // If the URL is already a full URL, return it as is
-    if (
-      url.startsWith('http://') ||
-      url.startsWith('https://') ||
-      url.startsWith('data:')
-    ) {
+    // If already absolute, return as is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-
-    // If it's a relative URL, prepend the base URL
-    const baseUrl = 'http://localhost:3000';
-    const fullUrl = url.startsWith('/')
-      ? `${baseUrl}${url}`
-      : `${baseUrl}/${url}`;
-
-    console.log('Image URL constructed:', { original: url, full: fullUrl });
-    return fullUrl;
+    // If url starts with '/images/', use backend base URL
+    if (url.startsWith('/images/')) {
+      return `http://localhost:3000${url}`;
+    }
+    // Otherwise, fallback to base URL + '/' + url
+    return `http://localhost:3000/images/${image.id}/file`;
   }
 
   onImageError(event: any, image: any): void {

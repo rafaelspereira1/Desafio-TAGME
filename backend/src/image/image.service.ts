@@ -9,7 +9,9 @@ import { Image } from './schemas/image.schema';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { QueryImageDto } from './dto/query-image.dto';
+import { ImageListItem } from './interfaces/image.types';
 import sharp from 'sharp';
+import type { Request } from 'express';
 
 @Injectable()
 export class ImageService {
@@ -42,7 +44,8 @@ export class ImageService {
   async findAll(
     query: QueryImageDto,
     userId: string,
-  ): Promise<{ data: Image[]; total: number }> {
+    req?: Request,
+  ): Promise<{ data: ImageListItem[]; total: number }> {
     const filter: Record<string, any> = { user: new Types.ObjectId(userId) };
     if (query.filter) {
       filter.title = { $regex: query.filter, $options: 'i' };
@@ -52,19 +55,36 @@ export class ImageService {
     const orderBy = query.orderBy ?? 'createdAt';
     const order = query.order === 'desc' ? -1 : 1;
     const total = await this.imageModel.countDocuments(filter);
-    const data = await this.imageModel
-      .find(filter)
-      .sort({ [orderBy]: order })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
+    const data: ImageListItem[] = (
+      await this.imageModel
+        .find(filter)
+        .select('-data')
+        .sort({ [orderBy]: order })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec()
+    ).map((img) => {
+      const obj = img.toObject();
+      let url = `/images/${String(obj._id)}/file`;
+      if (req) {
+        url = `${req.protocol}://${req.get('host')}${url}`;
+      }
+      return {
+        id: String(obj._id),
+        title: obj.title,
+        description: obj.description,
+        url,
+        createdAt: obj.createdAt,
+        updatedAt: obj.updatedAt,
+      };
+    });
     return { data, total };
   }
 
-  async findOne(id: string, userId: string): Promise<Image> {
+  async findOne(id: string, userId?: string): Promise<Image> {
     const image = await this.imageModel.findById(id);
     if (!image) throw new NotFoundException('Image not found');
-    if (image.user.toString() !== userId) {
+    if (userId && image.user.toString() !== userId) {
       throw new ForbiddenException('Access denied');
     }
     return image;

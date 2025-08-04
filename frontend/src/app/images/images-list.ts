@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -31,7 +32,7 @@ import { ImageService } from './images.service';
   templateUrl: './images-list.html',
   styleUrls: ['./images-list.scss'],
 })
-export class ImagesListComponent {
+export class ImagesListComponent implements OnInit {
   filterTitle = '';
   orderBy = 'createdAt';
   order = 'desc';
@@ -41,11 +42,25 @@ export class ImagesListComponent {
   pageSize = 10;
   pageIndex = 0;
 
-  constructor(private imageService: ImageService) {
+  constructor(private imageService: ImageService, private router: Router) {}
+
+  ngOnInit(): void {
     this.loadImages();
   }
 
+  goToUpload(): void {
+    this.router.navigate(['/upload']);
+  }
+
   loadImages(): void {
+    console.log('Loading images with params:', {
+      page: this.pageIndex + 1,
+      limit: this.pageSize,
+      filter: this.filterTitle,
+      orderBy: this.orderBy,
+      order: this.order,
+    });
+
     this.imageService
       .getImages({
         page: this.pageIndex + 1,
@@ -54,9 +69,18 @@ export class ImagesListComponent {
         orderBy: this.orderBy,
         order: this.order,
       })
-      .subscribe((res: any) => {
-        this.images = res.items || [];
-        this.total = res.total || 0;
+      .subscribe({
+        next: (res: any) => {
+          console.log('Images loaded:', res);
+          this.images = res.items || res.data || res || [];
+          this.total = res.total || res.count || 0;
+          console.log('Images array:', this.images);
+        },
+        error: (error) => {
+          console.error('Error loading images:', error);
+          this.images = [];
+          this.total = 0;
+        },
       });
   }
 
@@ -70,5 +94,45 @@ export class ImagesListComponent {
     this.imageService.deleteImage(id).subscribe(() => {
       this.loadImages();
     });
+  }
+
+  getImageUrl(image: any): string {
+    // Try different possible URL properties and construct full URL if needed
+    const url = image.url || image.imageUrl || image.src || image.path;
+
+    if (!url) {
+      console.warn('No image URL found for image:', image);
+      return '';
+    }
+
+    // If the URL is already a full URL, return it as is
+    if (
+      url.startsWith('http://') ||
+      url.startsWith('https://') ||
+      url.startsWith('data:')
+    ) {
+      return url;
+    }
+
+    // If it's a relative URL, prepend the base URL
+    const baseUrl = 'http://localhost:3000';
+    const fullUrl = url.startsWith('/')
+      ? `${baseUrl}${url}`
+      : `${baseUrl}/${url}`;
+
+    console.log('Image URL constructed:', { original: url, full: fullUrl });
+    return fullUrl;
+  }
+
+  onImageError(event: any, image: any): void {
+    console.error('Image failed to load:', {
+      event,
+      image,
+      src: event.target.src,
+    });
+  }
+
+  onImageLoad(event: any, image: any): void {
+    console.log('Image loaded successfully:', { image, src: event.target.src });
   }
 }

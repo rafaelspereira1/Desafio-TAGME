@@ -1,24 +1,90 @@
 <div class="login-bg">
   <div class="login-container mat-app-background">
     <mat-card>
-      <mat-card-title>Enviar Imagem</mat-card-title>
-      <input type="file" (change)="onFileChange($event)" accept="image/*" />
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        "
+      >
+        <mat-card-title>Enviar Imagem</mat-card-title>
+        <button mat-icon-button (click)="goToList()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Título da imagem</mat-label>
+        <input
+          matInput
+          [(ngModel)]="imageTitle"
+          placeholder="Digite o título"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Descrição (opcional)</mat-label>
+        <textarea
+          matInput
+          [(ngModel)]="imageDescription"
+          placeholder="Digite a descrição"
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="file-input-container">
+        <input
+          type="file"
+          (change)="onFileChange($event)"
+          accept="image/*"
+          #fileInput
+          style="display: none"
+        />
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="fileInput.click()"
+          [disabled]="loading"
+        >
+          Selecionar Imagem
+        </button>
+      </div>
+
       <div *ngIf="imageChangedEvent">
         <image-cropper
           [imageChangedEvent]="imageChangedEvent"
           [maintainAspectRatio]="true"
           [aspectRatio]="1 / 1"
           format="png"
+          [resizeToWidth]="300"
+          [onlyScaleDown]="true"
+          [roundCropper]="false"
+          [canvasRotation]="0"
+          [alignImage]="'center'"
+          backgroundColor="#000000"
           (imageCropped)="onImageCropped($event)"
+          (imageLoaded)="onImageLoaded()"
+          (cropperReady)="onCropperReady()"
+          (loadImageFailed)="onLoadImageFailed()"
         ></image-cropper>
       </div>
+
+      <!-- Debug info (remove this later) -->
+      <div style="color: #ccc; font-size: 12px; margin: 10px 0">
+        Debug: Title: "{{ imageTitle }}" | Has Image: {{ !!croppedImage }} |
+        Loading: {{ loading }}
+      </div>
+
       <button
         mat-raised-button
         color="primary"
         (click)="uploadImage()"
-        [disabled]="!croppedImage"
+        [disabled]="!croppedImage || !imageTitle || loading"
       >
-        Enviar
+        <mat-icon *ngIf="loading">refresh</mat-icon>
+        {{ loading ? "Enviando..." : "Enviar" }}
       </button>
     </mat-card>
   </div>

@@ -10,16 +10,41 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  # backend:
-  #   build: ./backend/tagme-backend
-  #   container_name: tagme-backend
-  #   restart: always
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - mongodb
-  #   environment:
-  #     MONGODB_URI: mongodb://mongodb:27017/tagme
+  backend:
+    build: ./backend
+    container_name: tagme-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/tagme
+
+  backend-test:
+    build: ./backend
+    container_name: tagme-backend-test
+    depends_on:
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/tagme
+    command: npm run test
+
+  frontend:
+    build: ./frontend
+    container_name: tagme-frontend
+    restart: always
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+  frontend-test:
+    build: ./frontend
+    container_name: tagme-frontend-test
+    command: npx ng test --watch=false --browsers=ChromeHeadlessNoSandbox --karma-config=karma.conf.js
+    depends_on:
+      - backend
 
 volumes:
   mongo_data:

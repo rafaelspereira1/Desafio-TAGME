@@ -23,5 +23,6 @@ RUN npm install
 # Copy the rest of the app
 COPY . .
 
-# Default command: run tests
-CMD ["npx", "ng", "test", "--watch=false", "--browsers=ChromeHeadlessNoSandbox", "--karma-config=karma.conf.js"]
+# Default command: run Angular dev server
+EXPOSE 4200
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0"]
